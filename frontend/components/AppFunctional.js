@@ -48,15 +48,18 @@ export default function AppFunctional(props) {
   function move(evt) {
     const direction = evt.target.id;
     const nextIndex = getNextIndex(direction);
+
     if (nextIndex === index) {
       // If we're trying to move out of bounds
-      if (direction === "up" && index < 3) setMessage("You can't go up");
-      else if (direction === "down" && index > 5)
+      if (direction === "up" && index < 3) {
+        setMessage("You can't go up");
+      } else if (direction === "down" && index > 5) {
         setMessage("You can't go down");
-      else if (direction === "left" && index % 3 === 0)
+      } else if (direction === "left" && index % 3 === 0) {
         setMessage("You can't go left");
-      else if (direction === "right" && index % 3 === 2)
+      } else if (direction === "right" && index % 3 === 2) {
         setMessage("You can't go right");
+      }
     } else {
       // Valid move
       setIndex(nextIndex);
