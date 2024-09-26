@@ -1,30 +1,24 @@
 import React, { useState } from "react";
-
 const initialMessage = "";
 const initialEmail = "";
 const initialSteps = 0;
 const initialIndex = 4; // Middle square index (2,2)
-
 export default function AppFunctional(props) {
-  // Set up the state variables
   const [index, setIndex] = useState(initialIndex); // B's position
   const [steps, setSteps] = useState(initialSteps); // Step counter
   const [email, setEmail] = useState(initialEmail); // Email input
   const [message, setMessage] = useState(initialMessage); // Display messages (errors/success)
-
   // Helper to calculate X, Y coordinates based on index
   function getXY() {
     const x = (index % 3) + 1; // X coordinate
     const y = Math.floor(index / 3) + 1; // Y coordinate
     return [x, y];
   }
-
   // Helper to construct the coordinates message
   function getXYMessage() {
     const [x, y] = getXY();
     return `Coordinates (${x}, ${y})`;
   }
-
   // Reset function to return all states to their initial values
   function reset() {
     setIndex(initialIndex);
@@ -32,7 +26,6 @@ export default function AppFunctional(props) {
     setEmail(initialEmail);
     setMessage(initialMessage);
   }
-
   // Helper to calculate the next index based on direction
   function getNextIndex(direction) {
     const moveMap = {
@@ -43,16 +36,19 @@ export default function AppFunctional(props) {
     };
     return moveMap[direction];
   }
-
   // Handler to handle movement events
   function move(evt) {
     const direction = evt.target.id;
     const nextIndex = getNextIndex(direction);
+    // console.log("Direction:", direction); // Log the direction
+    // console.log("Next index:", nextIndex); // Log the next index
+    // console.log("Message before move:", message); // Log the message before updating it
 
     if (nextIndex === index) {
       // If we're trying to move out of bounds
       if (direction === "up" && index < 3) {
         setMessage("You can't go up");
+        //console.log(`You can't go up`);
       } else if (direction === "down" && index > 5) {
         setMessage("You can't go down");
       } else if (direction === "left" && index % 3 === 0) {
@@ -67,18 +63,15 @@ export default function AppFunctional(props) {
       setMessage(""); // Clear message when valid move happens
     }
   }
-
   // Handler for input change
   function onChange(evt) {
     setEmail(evt.target.value);
   }
-
   // Handler for form submission
   function onSubmit(evt) {
     evt.preventDefault();
     const [x, y] = getXY();
     const payload = { x, y, steps, email };
-
     fetch("http://localhost:9000/api/result", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

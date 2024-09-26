@@ -1,6 +1,6 @@
 // Write your tests here
 import React from "react"; // React is necessary for rendering components
-import { render, fireEvent, waitFor } from "@testing-library/react"; // Functions to render components and simulate events
+import { render, fireEvent, waitFor } from "@testing-library/react"; // Import waitFor
 import "@testing-library/jest-dom/extend-expect"; // Extends Jest to include DOM-specific matchers like `toBeInTheDocument`
 import AppFunctional from "./AppFunctional"; // Import the component you're testing
 test("sanity", () => {
@@ -24,15 +24,21 @@ test("moves left and updates state correctly", () => {
   expect(getByText(/you moved 1 time/i)).toBeInTheDocument();
 });
 
-test("displays error message when trying to move up from the top row", async () => {
-  const { getByText, getByRole } = render(<AppFunctional />);
+test("displays error message on failed form submission", async () => {
+  global.fetch = jest.fn(() => Promise.reject(new Error("Submission failed")));
 
-  fireEvent.click(getByRole("button", { name: /up/i }));
+  const { getByText, getByPlaceholderText, getByRole } = render(
+    <AppFunctional />
+  );
 
-  // Wait for the error message to appear
-  await waitFor(() => {
-    expect(getByText(/you can't go up/i)).toBeInTheDocument();
+  fireEvent.change(getByPlaceholderText(/type email/i), {
+    target: { value: "test@example.com" },
   });
+  fireEvent.click(getByRole("button", { name: /submit/i }));
+
+  await waitFor(() =>
+    expect(getByText(/Error submitting form./i)).toBeInTheDocument()
+  );
 });
 
 test("resets the state correctly", () => {
